@@ -3,6 +3,7 @@ import { ProjectConfigStore } from "@supabase/config";
 import { unixHttpClientLayer } from "@supabase/stack";
 import { Cause, Effect, Exit, Fiber, Layer, Stdio } from "effect";
 import { CliOutput, Command } from "effect/unstable/cli";
+import { unshadowCommandVersionFlag } from "./version-flag-shadowing.ts";
 import { CLI_VERSION } from "./version.ts";
 import { Credentials } from "../../next/auth/credentials.service.ts";
 import { jsonCliOutputFormatter } from "../output/json-formatter.ts";
@@ -65,7 +66,8 @@ function projectHomeLayerFor(runtimeLayer: Layer.Layer<never>) {
   );
 }
 
-function cliProgramFor(rootCommand: Command.Command.Any, args: ReadonlyArray<string>) {
+function cliProgramFor(rootCommand: Command.Command.Any, rawArgs: ReadonlyArray<string>) {
+  const args = unshadowCommandVersionFlag(rawArgs);
   const runtimeLayer = Layer.mergeAll(processControlLayer, runtimeInfoLayer, ttyLayer);
   const fallbackCommandLayer = Layer.mergeAll(
     // Root command env inference currently leaks some subcommand-provided services.

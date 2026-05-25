@@ -1,9 +1,11 @@
 import { Command, Flag } from "effect/unstable/cli";
 import type * as CliCommand from "effect/unstable/cli/Command";
+import { COMMAND_VERSION_FLAG_ALIAS } from "../../../../shared/cli/version-flag-shadowing.ts";
 import { legacyMigrationSquash } from "./squash.handler.ts";
 
 const config = {
   version: Flag.string("version").pipe(
+    Flag.withAlias(COMMAND_VERSION_FLAG_ALIAS),
     Flag.withDescription("Squash up to the specified version."),
     Flag.optional,
   ),
